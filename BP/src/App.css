@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  gap: 10px;
+}
+
+.canvas-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.usecase-div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.usecase-div__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
