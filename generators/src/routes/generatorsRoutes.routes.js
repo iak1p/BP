@@ -8,7 +8,7 @@ const allowedTypes = ["koch", "sierpinsky", "anklet"];
 
 const generate = async (req, res) => {
   const { type = null, params = {} } = req.body ?? {};
-  const { depth = null } = params;
+  const { depth = null, ...otherParams } = params;
 
   if (!type || !depth) {
     return res.status(400).json({
@@ -25,7 +25,7 @@ const generate = async (req, res) => {
 
   try {
     const patern = new PatternDTO(type, depth);
-    const fractal = createFractal(type, { center: { x: 500 } });
+    const fractal = createFractal(type, otherParams);
     const geometry = await fractal.generate(patern);
     const artifactId = await createArtifact(type, JSON.stringify(geometry));
 

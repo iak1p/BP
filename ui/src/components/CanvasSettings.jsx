@@ -1,4 +1,8 @@
-export default function CanvasSettings({ canvasSize, setCanvasSize }) {
+export default function CanvasSettings({
+  canvasSize,
+  setCanvasSize,
+  setCanvasColor,
+}) {
   return (
     <>
       <h3 className="title">Canvas settings</h3>
@@ -37,6 +41,16 @@ export default function CanvasSettings({ canvasSize, setCanvasSize }) {
               const rounded = Math.round(val / 10) * 10;
               setCanvasSize({ ...canvasSize, y: rounded });
             }}
+          />
+        </div>
+        <div className="">
+          <label htmlFor="canvasColor">Canvas background color:</label>
+          <input
+            id="canvasColor"
+            type="color"
+            defaultValue="#000000"
+            onBlur={(e) => setCanvasColor(e.target.value)}
+            style={{ height: "21px" }}
           />
         </div>
       </div>

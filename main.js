@@ -75,7 +75,7 @@ const useCase4 = createUseCase({
 // });
 
 geometry = useCase.apply(geometry);
-// geometry = useCase2.apply(geometry);
+geometry = useCase2.apply(geometry);
 // geometry = useCase3.apply(geometry);
 // geometry = useCase4.apply(geometry);
 
@@ -94,7 +94,7 @@ console.log(geometry);
 import express from "express";
 import cors from "cors";
 
-import canvasRoutes from "./src/adapter/canvas.renderer.routes.js";
+import canvasRoutes from "./src/adapter/canvas1.renderer.routes.js";
 
 export const app = express();
 

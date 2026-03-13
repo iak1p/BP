@@ -1,8 +1,4 @@
-export default function AnkletSettings({
-  setDepth,
-  setLineLength,
-  setSquareSide,
-}) {
+export default function SierpinskySettings({ setSize, setDepth }) {
   return (
     <>
       <div className="canvas-settings">
@@ -18,24 +14,14 @@ export default function AnkletSettings({
           />
         </div>
         <div className="">
-          <label htmlFor="depth">Line size:</label>
+          <label htmlFor="depth">Size:</label>
           <input
             id="depth"
             type="number"
-            defaultValue={10}
+            defaultValue={400}
+            step={10}
             onChange={(e) => {
-              setLineLength(Number(e.target.value));
-            }}
-          />
-        </div>
-        <div className="">
-          <label htmlFor="depth">Square side:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={10}
-            onChange={(e) => {
-              setSquareSide(Number(e.target.value));
+              setSize(Number(e.target.value));
             }}
           />
         </div>

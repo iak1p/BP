@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 export default function Console() {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
@@ -20,25 +20,29 @@ export default function Console() {
 
   return (
     <>
-      <button onClick={() => setShow(!show)} style={{ width: "100%" }}>
-        Toggle console
-      </button>
-      <div className="console">
-        {show
-          ? logs.map((el) => {
-              return (
-                <>
-                  <p style={{ color: el.type === "error" ? "red" : "black" }}>
-                    <span style={{ color: "gray" }}>
-                      {new Date(el.at).toLocaleTimeString()}
-                    </span>
-                    {el.step}
-                  </p>
-                </>
-              );
-            })
-          : null}
-      </div>
+      <h3 className="title">
+        Console <button onClick={() => setShow(!show)}>Toggle console</button>
+      </h3>
+
+      {show && (
+        <div className="console">
+          {logs.length === 0 ? (
+            <p style={{ color: "gray" }}>No logs yet...</p>
+          ) : (
+            logs.map((el, index) => (
+              <p
+                style={{ color: el.type === "error" ? "red" : "black" }}
+                key={index}
+              >
+                <span style={{ color: "gray" }}>
+                  {el.at ? new Date(el.at).toLocaleTimeString() : ""}
+                </span>
+                {el.step}
+              </p>
+            ))
+          )}
+        </div>
+      )}
     </>
   );
 }
