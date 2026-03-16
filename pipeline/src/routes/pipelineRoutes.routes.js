@@ -36,8 +36,24 @@ const run = async (req, res) => {
         body: JSON.stringify({ type, params }),
       },
     )
-      .then((res) => res.json())
-      .then((data) => data.artifactId);
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorData = await res.json();
+
+          sseSend({
+            type: "error",
+            step: `Generator service error: ${errorData.error}`,
+            at: Date.now(),
+          });
+          throw new Error(`Generator service error: ${res.status}`);
+        }
+
+        return res.json();
+      })
+      .then((data) => data.artifactId)
+      .catch((err) => {
+        throw err;
+      });
 
     // 2. Save generated artifact step to DB and notify clients
     await saveStep(jobId, "generated", { artifactId });

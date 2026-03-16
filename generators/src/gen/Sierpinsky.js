@@ -1,6 +1,6 @@
 import { GeometryDTO, Generator } from "../utils/generator.base.js";
 
-function Sierpinsky(opts) {
+export default function Sierpinsky(opts) {
   Generator.call(this);
   this.g = new GeometryDTO();
   this.center = (opts && opts.center) || { x: 0, y: 0 };
@@ -45,7 +45,7 @@ Sierpinsky.prototype.generate = function (patternDTO) {
     this.center.x,
     this.center.y,
     this.sides,
-    this.size,
+    this.size
   );
 
   this.subdivide(a, b, c, depth);
@@ -53,14 +53,4 @@ Sierpinsky.prototype.generate = function (patternDTO) {
   this.g.meta.depth = depth;
   this.g.meta.sides = this.sides;
   return this.g;
-};
-
-export default {
-  id: "sierpinsky",
-  name: "sierpinsky",
-  defaults: {
-    center: { x: 0, y: 0 },
-    size: 200,
-  },
-  Generator: Sierpinsky,
 };

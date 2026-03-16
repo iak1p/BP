@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PatternDTO } from "../utils/generator.base.js";
-import { createFractal } from "../generators/FractalFactory.js";
+import { createFractal } from "../gen/FractalFactory.js";
 import { createArtifact } from "../utils/db.js";
 
 const genaratorRoutes = new Router();

@@ -1,6 +1,6 @@
 import { GeometryDTO, Generator, PatternDTO } from "../utils/generator.base.js";
 
-function Anklet(opts) {
+export default function Anklet(opts) {
   Generator.call(this);
   this.g = new GeometryDTO();
   this.center = (opts && opts.center) || { x: 0, y: 0 };
@@ -80,15 +80,4 @@ Anklet.prototype.generate = function (patternDTO) {
   this.g.meta.squareSide = this.squareSide;
 
   return this.g;
-};
-
-export default {
-  id: "anklet",
-  name: "anklet",
-  defaults: {
-    center: { x: 0, y: 0 },
-    lineLength: 20,
-    squareSide: 20,
-  },
-  Generator: Anklet,
 };

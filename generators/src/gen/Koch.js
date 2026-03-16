@@ -1,6 +1,6 @@
 import { GeometryDTO, Generator } from "../utils/generator.base.js";
 
-function Koch(opts) {
+export default function Koch(opts) {
   Generator.call(this);
   this.g = new GeometryDTO();
   this.center = (opts && opts.center) || { x: 0, y: 0 };
@@ -69,15 +69,4 @@ Koch.prototype.generate = function (patternDTO) {
   this.g.meta.sides = this.sides;
   this.g.meta.outward = this.outward;
   return this.g;
-};
-
-export default {
-  id: "koch",
-  name: "Koch",
-  defaults: {
-    center: { x: 400, y: 300 },
-    size: 200,
-    sides: 2,
-  },
-  Generator: Koch,
 };
