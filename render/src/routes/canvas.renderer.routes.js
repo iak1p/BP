@@ -1,7 +1,6 @@
 import { Router } from "express";
 import CanvasRenderer from "../utils/canvas.renderer.js";
 import { getArtifactData } from "../utils/db.js";
-// import CanvasRenderer from "./canvas.renderer.js";
 
 const canvasRoutes = new Router();
 
@@ -19,8 +18,6 @@ async function render(req, res) {
 
     const renderer = new CanvasRenderer(canvasParams);
     const canvas = renderer.render(geometry);
-
-    // return res.status(200).json(req.body);
 
     res.setHeader("Content-Type", "image/png");
     const stream = canvas.createPNGStream();

@@ -1,10 +1,32 @@
 import { Router } from "express";
-import { getArtifact, getArtifactData, updateArtifactData } from "../utils/db.js";
-import createUseCase from "../utils/registers.js";
+import { getArtifactData, updateArtifactData } from "../utils/db.js";
+import {
+  getAvailableUseCases,
+  createUseCase,
+} from "../useCases/registersAuto.js";
 
 const useCasesRoutes = new Router();
 
-const apply = async (req, res) => {
+/**
+ * Applies use cases to an existing artifact.
+ *
+ * Request body:
+ * {
+ *   artifactId: string,
+ *   usecases: [
+ *     {
+ *       name: string,
+ *       otherParams: any
+ *     },
+ *   ]
+ * }
+ *
+ * Response:
+ * {
+ *   artifact: Object
+ * }
+ */
+const applyUseCasesToArtifact = async (req, res) => {
   const { artifactId = null, usecases = [] } = req.body ?? {};
 
   if (!artifactId) {
@@ -16,17 +38,30 @@ const apply = async (req, res) => {
   try {
     const artifact = await getArtifactData(artifactId);
 
-    usecases.forEach((usecase) => {
-      usecase = createUseCase(usecase);
-      usecase.apply(artifact);
-    });
+    for (const useCaseDef of usecases) {
+      try {
+        const usecase = await createUseCase(useCaseDef);
+        usecase.apply(artifact);
+      } catch (err) {
+        throw err;
+      }
+    }
 
     await updateArtifactData(artifactId, artifact);
-    return res.status(200).json({ artifact });
+    return res.status(200).json({ artifactId });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 };
 
-useCasesRoutes.post("/apply", apply);
+useCasesRoutes.get("/", async (req, res) => {
+  try {
+    const availableUseCases = await getAvailableUseCases();
+    return res.status(200).json(availableUseCases);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+useCasesRoutes.post("/apply", applyUseCasesToArtifact);
 export default useCasesRoutes;

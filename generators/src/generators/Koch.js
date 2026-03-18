@@ -73,7 +73,7 @@ Koch.prototype.generate = function (patternDTO) {
 
 export default {
   id: "koch",
-  name: "Koch",
+  name: "koch",
   defaults: {
     center: { x: 400, y: 300 },
     size: 200,

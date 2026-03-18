@@ -1,4 +1,4 @@
-import { GeometryDTO, Generator } from "../utils/generator.base.js";
+import { GeometryDTO, Generator } from "../../generators/src/utils/generator.base.js";
 
 export default function Sierpinsky(opts) {
   Generator.call(this);

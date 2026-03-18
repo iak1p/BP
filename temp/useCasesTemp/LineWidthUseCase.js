@@ -1,6 +1,6 @@
 import UseCase from "./usecases.base.js";
 
-function LineWidthUseCase(opts) {
+export default function LineWidthUseCase(opts) {
   UseCase.call(this);
   this.width = (opts && opts.width) || 1;
 }
@@ -15,13 +15,4 @@ LineWidthUseCase.prototype.apply = function (geometry) {
   }
 
   return geometry;
-};
-
-export default {
-  id: "width",
-  name: "width",
-  defaults: {
-    width: 1
-  },
-  UseCase: LineWidthUseCase,
 };

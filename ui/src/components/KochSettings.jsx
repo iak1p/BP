@@ -1,41 +1,33 @@
-export default function KochSettings({ setDepth, setSize, setSides }) {
+import SettingsInput from "./SettingsInput";
+
+export default function KochSettings({ setDepth, setSize, setSides, usecase }) {
   return (
     <>
       <div className="canvas-settings">
-        <div className="">
-          <label htmlFor="depth">Depth:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={4}
-            onChange={(e) => {
-              setDepth(Number(e.target.value));
-            }}
-          />
-        </div>
-        <div className="">
-          <label htmlFor="depth">Size:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={400}
-            step={10}
-            onChange={(e) => {
-              setSize(Number(e.target.value));
-            }}
-          />
-        </div>
-        <div className="">
-          <label htmlFor="depth">Sides:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={3}
-            onChange={(e) => {
-              setSides(Number(e.target.value));
-            }}
-          />
-        </div>
+        <SettingsInput
+          label="Depth:"
+          type="number"
+          defaultValue={4}
+          id="depth"
+          onChange={(e) => setDepth(Number(e.target.value))}
+        />
+
+        <SettingsInput
+          label="Size:"
+          type="number"
+          defaultValue={usecase?.size}
+          id="size"
+          step={10}
+          onChange={(e) => setSize(Number(e.target.value))}
+        />
+
+        <SettingsInput
+          label="Sides:"
+          type="number"
+          defaultValue={usecase?.sides}
+          id="sides"
+          onChange={(e) => setSides(Number(e.target.value))}
+        />
       </div>
     </>
   );

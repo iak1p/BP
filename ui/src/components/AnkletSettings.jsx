@@ -1,44 +1,37 @@
+import SettingsInput from "./SettingsInput";
+
 export default function AnkletSettings({
   setDepth,
   setLineLength,
   setSquareSide,
+  usecase,
 }) {
   return (
     <>
       <div className="canvas-settings">
-        <div className="">
-          <label htmlFor="depth">Depth:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={4}
-            onChange={(e) => {
-              setDepth(Number(e.target.value));
-            }}
-          />
-        </div>
-        <div className="">
-          <label htmlFor="depth">Line size:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={10}
-            onChange={(e) => {
-              setLineLength(Number(e.target.value));
-            }}
-          />
-        </div>
-        <div className="">
-          <label htmlFor="depth">Square side:</label>
-          <input
-            id="depth"
-            type="number"
-            defaultValue={10}
-            onChange={(e) => {
-              setSquareSide(Number(e.target.value));
-            }}
-          />
-        </div>
+        <SettingsInput
+          label="Depth:"
+          type="number"
+          defaultValue={4}
+          id="depth"
+          onChange={(e) => setDepth(Number(e.target.value))}
+        />
+
+        <SettingsInput
+          label="Line size:"
+          type="number"
+          defaultValue={usecase?.lineLength}
+          id="line-size"
+          onChange={(e) => setLineLength(Number(e.target.value))}
+        />
+
+        <SettingsInput
+          label="Square size:"
+          type="number"
+          defaultValue={usecase?.squareSide}
+          id="square-size"
+          onChange={(e) => setSquareSide(Number(e.target.value))}
+        />
       </div>
     </>
   );

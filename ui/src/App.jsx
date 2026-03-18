@@ -6,11 +6,14 @@ import AnkletSettings from "./components/AnkletSettings";
 import Usecases from "./components/Usecases";
 import Console from "./components/Console";
 import SierpinskySettings from "./components/SierpinskySettings";
+import HexaGridSettings from "./components/HexaGridSettings";
+import IslamicGridSettings from "./components/IslamicGridSettings";
+import IslamicSquareSetting from "./components/IslamicSquareSetting";
 
 function App() {
   const [canvasSize, setCanvasSize] = useState({ x: 800, y: 600 });
   const [canvasColor, setCanvasColor] = useState("#000000");
-  const [fractalType, setFractalType] = useState("Koch");
+  const [fractalType, setFractalType] = useState("");
   const [html, setHtml] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,6 +22,9 @@ function App() {
   const [sides, setSides] = useState(3);
   const [lineLength, setLineLength] = useState(10);
   const [squareSide, setSquareSide] = useState(10);
+  const [rows, setRows] = useState(2);
+  const [cols, setCols] = useState(2);
+  const [sideLength, setSideLength] = useState(40);
 
   const [imageUrl, setImageUrl] = useState("");
 
@@ -26,6 +32,8 @@ function App() {
   const [useCaseScale, setUseCaseScale] = useState(null);
   const [useCaseRotation, setUseCaseRotation] = useState(null);
   const [useCaseThick, setUseCaseThick] = useState(null);
+
+  const [generators, setGenerators] = useState([]);
 
   const resetParams = () => {
     setDepth(4);
@@ -53,6 +61,9 @@ function App() {
           center: { x: canvasSize.x / 2, y: canvasSize.y / 2 },
           lineLength,
           squareSide,
+          rows,
+          cols,
+          sideLength,
         },
         canvasParams: {
           width: canvasSize.x,
@@ -85,31 +96,93 @@ function App() {
       })
       .finally(() => {
         setLoading(false);
-        resetParams();
+        // resetParams();
       });
+  };
+
+  useEffect(() => {
+    fetch("http://localhost:4002/api/generator")
+      .then((res) => res.json())
+      .then((data) => {
+        setGenerators(data);
+        setFractalType(data[0]?.name || "");
+      });
+  }, []);
+
+  const setDefaults = () => {
+    const generator = generators.find((el) => el.name === fractalType);
+
+    console.log(generator?.defaults);
+
+    setDepth(4);
+    setSize(generator?.defaults?.size);
+    setSides(generator?.defaults?.sides);
+    setLineLength(generator?.defaults?.lineLength);
+    setSquareSide(generator?.defaults?.squareSide);
+    setRows(generator?.defaults?.rows);
+    setCols(generator?.defaults?.cols);
+
+    return generator?.defaults;
   };
 
   useEffect(() => {
     resetParams();
 
-    if (fractalType === "Koch") {
+    const generator = setDefaults();
+
+    if (fractalType === "koch") {
       setHtml(
         <KochSettings
           setDepth={setDepth}
           setSize={setSize}
           setSides={setSides}
+          usecase={generator}
         />,
       );
-    } else if (fractalType === "Anklet") {
+    } else if (fractalType === "anklet") {
       setHtml(
         <AnkletSettings
           setDepth={setDepth}
           setLineLength={setLineLength}
           setSquareSide={setSquareSide}
+          usecase={generator}
         />,
       );
-    } else if (fractalType === "Sierpinsky") {
-      setHtml(<SierpinskySettings setDepth={setDepth} setSize={setSize} />);
+    } else if (fractalType === "sierpinsky") {
+      setHtml(
+        <SierpinskySettings
+          setDepth={setDepth}
+          setSize={setSize}
+          usecase={generator}
+        />,
+      );
+    } else if (fractalType === "islamicgrid") {
+      setHtml(
+        <IslamicGridSettings
+          setSize={setSize}
+          setRows={setRows}
+          setCols={setCols}
+          usecase={generator}
+        />,
+      );
+    } else if (fractalType === "hexagrid") {
+      setHtml(
+        <HexaGridSettings
+          setSideLength={setSideLength}
+          setRows={setRows}
+          setCols={setCols}
+          usecase={generator}
+        />,
+      );
+    } else if (fractalType === "islamicsquare") {
+      setHtml(
+        <IslamicSquareSetting
+          setSize={setSize}
+          setRows={setRows}
+          setCols={setCols}
+          usecase={generator}
+        />,
+      );
     }
   }, [fractalType]);
 
@@ -131,9 +204,11 @@ function App() {
               value={fractalType}
               onChange={(e) => setFractalType(e.target.value)}
             >
-              <option>Koch</option>
-              <option>Anklet</option>
-              <option>Sierpinsky</option>
+              {generators.map((g) => (
+                <option key={g.id} value={g.name}>
+                  {g.name}
+                </option>
+              ))}
             </select>
           </div>
           <CanvasSettings
@@ -155,7 +230,6 @@ function App() {
         </form>
         <div className="">
           <div>
-            
             <Console />
           </div>
         </div>
@@ -170,17 +244,8 @@ function App() {
             </a>
           )}
         </h3>
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt="Generated fractal"
-            width={canvasSize.x}
-            height={canvasSize.y}
-          />
-        ) : null}
+        {imageUrl ? <img src={imageUrl} alt="Generated fractal" /> : null}
       </div>
-
-      {/* <canvas width={canvasSize.x} height={canvasSize.y}></canvas> */}
     </>
   );
 }

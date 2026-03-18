@@ -9,7 +9,7 @@ const EXCLUDED_FILES = new Set(["FractalFactoryAutoDetect.js"]);
 
 async function loadGeneratorModules() {
   const files = fs
-    .readdirSync(__dirname)
+    .readdirSync(__dirname, { recursive: true })
     .filter((file) => file.endsWith(".js"))
     .filter((file) => !EXCLUDED_FILES.has(file));
 

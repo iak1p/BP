@@ -24,19 +24,6 @@ GeometryDTO.prototype.addSegment = function ({ a, b }) {
   this.segments.push({ a, b });
 };
 
-// export function GeometryDTO() {
-//   this.segments = [];
-//   this.circles = [];
-//   this.meta = {};
-// }
-
-// GeometryDTO.prototype.addSegment = function ({ a, b }) {
-//   this.segments.push({
-//     a: a,
-//     b: b,
-//   });
-// };
-
 export function PatternDTO(type, depth) {
   this.type = type;
   this.depth = depth | 0;

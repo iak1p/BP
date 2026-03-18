@@ -64,7 +64,24 @@ const run = async (req, res) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ artifactId, usecases }),
-    });
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorData = await res.json();
+
+          sseSend({
+            type: "error",
+            step: `UseCase service error: ${errorData.error}`,
+            at: Date.now(),
+          });
+          throw new Error(`UseCase service error: ${res.status}`);
+        }
+
+        return res.json();
+      })
+      .catch((err) => {
+        throw err;
+      });
 
     // 4. Save use cases applied step to DB and notify clients
     await saveStep(jobId, "usecases_applied", { artifactId });

@@ -1,6 +1,5 @@
 import fs from "fs";
 import { createCanvas } from "canvas";
-import path from "path";
 
 export default function CanvasRenderer(opt) {
   this.bgColor = (opt && opt.bgColor) || "#000000";
@@ -10,7 +9,6 @@ export default function CanvasRenderer(opt) {
 
 CanvasRenderer.prototype.render = function (geometry) {
   const segments = geometry.segments || [];
-  const circles = geometry.circles || [];
 
   const canvas = createCanvas(this.width, this.height);
   const ctx = canvas.getContext("2d");
@@ -44,19 +42,6 @@ CanvasRenderer.prototype.render = function (geometry) {
     ctx.stroke();
   }
 
-  // for (const c of circles) {
-  //   ctx.beginPath();
-  //   ctx.arc(c.c.x, c.c.y, c.r, 0, Math.PI * 2, true);
-
-  //   if (c.fillColor) {
-  //     ctx.fillStyle = c.fillColor;
-  //     ctx.fill();
-  //   }
-  //   ctx.lineWidth = c.width || 2;
-  //   ctx.strokeStyle = c.color || "#afafaf";
-  //   ctx.stroke();
-  // }
-
   ctx.restore();
 
   const dir = "./src/data";
@@ -64,12 +49,11 @@ CanvasRenderer.prototype.render = function (geometry) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-
-  const out = fs.createWriteStream(`${dir}/file_${Date.now()}.png`);
-  // const out = fs.createWriteStream(`./src/data/file_${Date.now()}.png`);
+  const fileName = Date.now();
+  const out = fs.createWriteStream(`${dir}/file_${fileName}.png`);
   const stream = canvas.createPNGStream();
   stream.pipe(out);
-  out.on("finish", () => console.log("Saved → 1.png"));
+  out.on("finish", () => console.log(`Saved → file_${fileName}.png`));
 
   return canvas;
 };

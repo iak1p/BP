@@ -1,6 +1,6 @@
 import UseCase from "./usecases.base.js";
 
-function ColorSolidUseCase(opts) {
+export default function ColorSolidUseCase(opts) {
   UseCase.call(this);
   this.color = (opts && opts.color) || "#000000";
 }
@@ -14,14 +14,6 @@ ColorSolidUseCase.prototype.apply = function (geometry) {
     geometry.segments[i].color = this.color;
   }
 
+  // geometry.color = this.color;
   return geometry;
-};
-
-export default {
-  id: "colorSolid",
-  name: "colorSolid",
-  defaults: {
-    color: "#000000",
-  },
-  UseCase: ColorSolidUseCase,
 };
