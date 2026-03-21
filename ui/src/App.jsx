@@ -35,6 +35,8 @@ function App() {
 
   const [generators, setGenerators] = useState([]);
 
+  const [fractals, setFractals] = useState([generators[0]?.name || ""]);
+
   const resetParams = () => {
     setDepth(4);
     setSize(400);
@@ -53,10 +55,11 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        type: fractalType.toLowerCase(),
+        type: "composite",
         params: {
           depth,
           size,
+          patterns: fractals,
           sides,
           center: { x: canvasSize.x / 2, y: canvasSize.y / 2 },
           lineLength,
@@ -109,8 +112,8 @@ function App() {
       });
   }, []);
 
-  const setDefaults = () => {
-    const generator = generators.find((el) => el.name === fractalType);
+  const setDefaults = (type) => {
+    const generator = generators.find((el) => el.name === type);
 
     console.log(generator?.defaults);
 
@@ -123,6 +126,11 @@ function App() {
     setCols(generator?.defaults?.cols);
 
     return generator?.defaults;
+  };
+
+  const getDefaults = (type) => {
+    const generator = generators.find((el) => el.name === type);
+    return generator?.defaults || {};
   };
 
   useEffect(() => {
@@ -195,8 +203,64 @@ function App() {
           preventDefault={true}
           onSubmit={onSubmit}
         >
-          <h3 className="title">Select fractal type</h3>
-          <div className="">
+          <h3 className="title">
+            Select fractal type
+            <button
+              type="button"
+              onClick={() => {
+                if (fractals.length < 3) {
+                  setFractals((prev) => [...prev, generators[0]?.name]);
+                }
+              }}
+            >
+              add
+            </button>
+          </h3>
+          {fractals.map((type, index) => (
+            <div className="">
+              <select
+                key={index}
+                value={type}
+                onChange={(e) =>
+                  setFractals((prev) =>
+                    prev.map((item, i) =>
+                      i === index ? e.target.value : item,
+                    ),
+                  )
+                }
+              >
+                {generators.map((g) => (
+                  <option key={g.id} value={g.name}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+              {}
+              <h3 className="title">Fractal settings</h3>
+              {type === "koch" && (
+                <KochSettings
+                  setDepth={setDepth}
+                  setSize={setSize}
+                  setSides={setSides}
+                  usecase={getDefaults(type)}
+                />
+              )}
+              {type === "anklet" && (
+                <AnkletSettings
+                  setDepth={setDepth}
+                  setLineLength={setLineLength}
+                  setSquareSide={setSquareSide}
+                  usecase={getDefaults(type)}
+                />
+              )}
+              {type === "sierpinsky" && <SierpinskySettings />}
+              {type === "islamicgrid" && <IslamicGridSettings />}
+              {type === "hexagrid" && <HexaGridSettings />}
+              {type === "islamicsquare" && <IslamicSquareSetting />}
+            </div>
+          ))}
+
+          {/* <div className="">
             <select
               id="type"
               name=""
@@ -210,14 +274,15 @@ function App() {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
+
           <CanvasSettings
             canvasSize={canvasSize}
             setCanvasSize={setCanvasSize}
             setCanvasColor={setCanvasColor}
           />
-          <h3 className="title">Fractal settings</h3>
-          <div className="">{html}</div>
+          {/* <h3 className="title">Fractal settings</h3> */}
+          {/* <div className="">{html}</div> */}
           <Usecases
             setUseCaseColor={setUseCaseColor}
             setUseCaseScale={setUseCaseScale}

@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: local-BP-postgres
+    container_name: local-bp-postgres
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
@@ -10,6 +10,58 @@ services:
       - "5555:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  usecases:
+    build:
+      context: ./useCases
+      dockerfile: Dockerfile
+    container_name: bp-usecases
+    ports:
+      - "4003:4003"
+    depends_on:
+      - postgres
+    volumes:
+      - ./useCases:/app
+      - /app/node_modules
+
+  render:
+    build:
+      context: ./render
+      dockerfile: Dockerfile
+    container_name: bp-render
+    ports:
+      - "4004:4004"
+    depends_on:
+      - postgres
+    volumes:
+      - ./render:/app
+      - /app/node_modules
+
+  pipeline:
+    build:
+      context: ./pipeline
+      dockerfile: Dockerfile
+    container_name: bp-pipeline
+    ports:
+      - "4001:4001"
+    depends_on:
+      - postgres
+    volumes:
+      - ./pipeline:/app
+      - /app/node_modules
+
+  generators:
+    build:
+      context: ./generators
+      dockerfile: Dockerfile
+    container_name: bp-generators
+    ports:
+      - "4002:4002"
+    depends_on:
+      - postgres
+    volumes:
+      - ./generators:/app
+      - /app/node_modules
 
   react:
     build:
@@ -21,10 +73,10 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      postgres:
-        condition: service_started
+      - postgres
     volumes:
       - ./ui:/app
       - /app/node_modules
+
 volumes:
   pgdata:

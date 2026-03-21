@@ -54,7 +54,7 @@ Koch.prototype.generate = function (patternDTO) {
     this.center.x,
     this.center.y,
     this.sides,
-    this.size
+    this.size,
   );
 
   const sign = this.outward ? +1 : -1;
@@ -68,6 +68,19 @@ Koch.prototype.generate = function (patternDTO) {
   this.g.meta.depth = depth;
   this.g.meta.sides = this.sides;
   this.g.meta.outward = this.outward;
+
+  // this.g.meta.pattern = {
+  //   type: patternDTO.type,
+  //   depth: patternDTO.depth,
+  //   options: patternDTO.options,
+  // };
+
+  // this.g.meta.generatorConfig = {
+  //   center: this.center,
+  //   size: this.size,
+  //   sides: this.sides,
+  //   outward: this.outward,
+  // };
   return this.g;
 };
 

@@ -11,6 +11,7 @@ const generatorRoutes = new Router();
 const generate = async (req, res) => {
   const { type = null, params = {} } = req.body ?? {};
   const { depth = null, ...otherParams } = params;
+  console.log(params);
 
   if (!type || depth === null || depth === undefined) {
     return res.status(400).json({
@@ -28,7 +29,7 @@ const generate = async (req, res) => {
       });
     }
 
-    const pattern = new PatternDTO(type, depth);
+    const pattern = new PatternDTO(type, depth, otherParams);
     const fractal = await createFractal(type, otherParams);
     const geometry = await fractal.generate(pattern);
     const artifactId = await createArtifact(type, JSON.stringify(geometry));

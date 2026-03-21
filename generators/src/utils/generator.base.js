@@ -6,7 +6,6 @@ Generator.prototype.generate = function () {
 
 export function GeometryDTO() {
   this.segments = [];
-  this.circles = [];
   this.meta = {};
   this._seen = new Set();
 }
@@ -24,7 +23,8 @@ GeometryDTO.prototype.addSegment = function ({ a, b }) {
   this.segments.push({ a, b });
 };
 
-export function PatternDTO(type, depth) {
+export function PatternDTO(type, depth, options = {}) {
   this.type = type;
   this.depth = depth | 0;
+  this.options = options;
 }

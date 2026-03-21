@@ -29,7 +29,7 @@ const run = async (req, res) => {
 
     // 1. Call generator service
     const artifactId = await fetch(
-      "http://localhost:4002/api/generator/generate",
+      "http://generators:4002/api/generator/generate",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +45,7 @@ const run = async (req, res) => {
             step: `Generator service error: ${errorData.error}`,
             at: Date.now(),
           });
-          throw new Error(`Generator service error: ${res.status}`);
+          throw new Error(`Generator service error: ${res.status}, ${errorData.error}`);
         }
 
         return res.json();
@@ -60,7 +60,7 @@ const run = async (req, res) => {
     sseSend({ type: "step", step: "Generated", at: Date.now() });
 
     // 3. Call use case service
-    await fetch("http://localhost:4003/api/usecases/apply", {
+    await fetch("http://usecases:4003/api/usecases/apply", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ artifactId, usecases }),
@@ -89,7 +89,7 @@ const run = async (req, res) => {
 
     // 5. Call render service
     const renderResponse = await fetch(
-      "http://localhost:4004/api/canvas/render",
+      "http://render:4004/api/canvas/render",
       {
         method: "POST",
         headers: {
