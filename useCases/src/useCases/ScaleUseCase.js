@@ -8,7 +8,7 @@ ScaleUseCase.prototype = Object.create(UseCase.prototype);
 ScaleUseCase.prototype.constructor = ScaleUseCase;
 
 ScaleUseCase.prototype.apply = function (geometry) {
-  geometry.scale = this.scale;
+  geometry.meta.transforms.push({ type: "scale", value: this.scale });
   return geometry;
 };
 

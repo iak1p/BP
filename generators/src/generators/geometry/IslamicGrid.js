@@ -14,7 +14,7 @@ IslamicGrid.prototype = Object.create(Generator.prototype);
 IslamicGrid.prototype.constructor = IslamicGrid;
 
 IslamicGrid.prototype.addLine = function (x1, y1, x2, y2) {
-  this.g.addSegment({
+  this.g.addLine({
     a: { x: x1, y: y1 },
     b: { x: x2, y: y2 },
   });

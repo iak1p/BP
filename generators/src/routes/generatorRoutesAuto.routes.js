@@ -32,6 +32,7 @@ const generate = async (req, res) => {
     const pattern = new PatternDTO(type, depth, otherParams);
     const fractal = await createFractal(type, otherParams);
     const geometry = await fractal.generate(pattern);
+    
     const artifactId = await createArtifact(type, JSON.stringify(geometry));
 
     return res.status(200).json({ artifactId });

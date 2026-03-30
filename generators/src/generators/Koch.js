@@ -13,7 +13,7 @@ Koch.prototype.constructor = Koch;
 
 Koch.prototype.subdivide = function (a, b, d, sign, ds) {
   if (d === 0) {
-    this.g.addSegment({ a: a, b: b });
+    this.g.addLine({ a: a, b: b, depth: d });
     return;
   }
 
@@ -45,6 +45,22 @@ Koch.prototype.polygonVertices = function (cx, cy, n, sideLen) {
     pts.push({ x: cx + R * Math.cos(ang), y: cy + R * Math.sin(ang) });
   }
   return pts;
+};
+
+Koch.prototype.generateFromEdges = function (edges, depth) {
+  const sign = this.outward ? +1 : -1;
+
+  for (const edge of edges) {
+    if (!edge || !edge.a || !edge.b) continue;
+    this.subdivide(edge.a, edge.b, depth, sign, 0);
+  }
+
+  this.g.meta.depth = depth;
+  this.g.meta.sides = this.sides;
+  this.g.meta.outward = this.outward;
+  this.g.meta.generatedFrom = "edges";
+
+  return this.g;
 };
 
 Koch.prototype.generate = function (patternDTO) {

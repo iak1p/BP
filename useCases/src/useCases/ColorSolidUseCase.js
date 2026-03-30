@@ -8,10 +8,11 @@ ColorSolidUseCase.prototype = Object.create(UseCase.prototype);
 ColorSolidUseCase.prototype.constructor = ColorSolidUseCase;
 
 ColorSolidUseCase.prototype.apply = function (geometry) {
-  const totalSegments = geometry.segments.length;
+  const totalObjects = geometry.objects.length;
+  console.log(geometry.objects);
 
-  for (let i = 0; i < totalSegments; i++) {
-    geometry.segments[i].color = this.color;
+  for (let i = 0; i < totalObjects; i++) {
+    geometry.objects[i].style.color = this.color;
   }
 
   return geometry;

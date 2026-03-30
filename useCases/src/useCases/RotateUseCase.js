@@ -8,7 +8,7 @@ RotateUseCase.prototype = Object.create(UseCase.prototype);
 RotateUseCase.prototype.constructor = RotateUseCase;
 
 RotateUseCase.prototype.apply = function (geometry) {
-  geometry.rotate = this.angle;
+  geometry.meta.transforms.push({ type: "rotate", value: this.angle });
   return geometry;
 };
 

@@ -13,12 +13,6 @@ function IslamicSquare(opts) {
 IslamicSquare.prototype = Object.create(Generator.prototype);
 IslamicSquare.prototype.constructor = IslamicSquare;
 
-IslamicSquare.prototype.addLine = function (x1, y1, x2, y2) {
-  this.g.addSegment({
-    a: { x: x1, y: y1 },
-    b: { x: x2, y: y2 },
-  });
-};
 
 IslamicSquare.prototype.drawTile = function (sideLength, centerX, centerY) {
   const d = (sideLength * Math.sqrt(2)) / 2;
@@ -33,24 +27,31 @@ IslamicSquare.prototype.drawTile = function (sideLength, centerX, centerY) {
   const bottomRight = { x: centerX + d, y: centerY + d };
   const bottomLeft = { x: centerX - d, y: centerY + d };
 
-  this.addLine(top.x, top.y, topRight.x, topRight.y);
-  this.addLine(topRight.x, topRight.y, right.x, right.y);
-  this.addLine(right.x, right.y, bottomRight.x, bottomRight.y);
-  this.addLine(bottomRight.x, bottomRight.y, bottom.x, bottom.y);
-  this.addLine(bottom.x, bottom.y, bottomLeft.x, bottomLeft.y);
-  this.addLine(bottomLeft.x, bottomLeft.y, left.x, left.y);
-  this.addLine(left.x, left.y, topLeft.x, topLeft.y);
-  this.addLine(topLeft.x, topLeft.y, top.x, top.y);
+//   this.addLine(top.x, top.y, topRight.x, topRight.y);
+//   this.addLine(topRight.x, topRight.y, right.x, right.y);
+//   this.addLine(right.x, right.y, bottomRight.x, bottomRight.y);
+//   this.addLine(bottomRight.x, bottomRight.y, bottom.x, bottom.y);
+//   this.addLine(bottom.x, bottom.y, bottomLeft.x, bottomLeft.y);
+//   this.addLine(bottomLeft.x, bottomLeft.y, left.x, left.y);
+//   this.addLine(left.x, left.y, topLeft.x, topLeft.y);
+//   this.addLine(topLeft.x, topLeft.y, top.x, top.y);
+
+  this.g.addPolygon(
+    [top, topRight, right, bottomRight, bottom, bottomLeft, left, topLeft],
+    // {
+    //   strokeColor: "#afafaf",
+    //   strokeWidth: 1,
+    //   fillColor: null,
+    // },
+  );
 };
 
 // no recursive
 
 IslamicSquare.prototype.generateGrid = function () {
   const tileSize = this.size;
-  const startX =
-    this.center.x - ((this.cols - 1) * tileSize * 2) / 2;
-  const startY =
-    this.center.y - ((this.rows - 1) * tileSize * 2) / 2;
+  const startX = this.center.x - ((this.cols - 1) * tileSize * 2) / 2;
+  const startY = this.center.y - ((this.rows - 1) * tileSize * 2) / 2;
 
   for (let row = 0; row < this.rows; row++) {
     for (let col = 0; col < this.cols; col++) {

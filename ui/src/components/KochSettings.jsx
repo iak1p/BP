@@ -1,6 +1,13 @@
 import SettingsInput from "./SettingsInput";
 
-export default function KochSettings({ setDepth, setSize, setSides, usecase }) {
+export default function KochSettings({
+  setDepth,
+  setSize,
+  setSides,
+  usecase,
+  updateFractalParam,
+  index
+}) {
   return (
     <>
       <div className="canvas-settings">
@@ -9,7 +16,8 @@ export default function KochSettings({ setDepth, setSize, setSides, usecase }) {
           type="number"
           defaultValue={4}
           id="depth"
-          onChange={(e) => setDepth(Number(e.target.value))}
+          // onChange={(e) => setDepth(Number(e.target.value))}
+          onChange={(e) => updateFractalParam(index, "depth", Number(e.target.value))}
         />
 
         <SettingsInput

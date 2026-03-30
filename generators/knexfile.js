@@ -10,8 +10,8 @@ module.exports = {
       database: "app",
       user: "app",
       password: "app",
-      host: "postgres",
-      port: 5432,
+      host: "localhost",
+      port: 5555,
     },
     pool: {
       min: 2,

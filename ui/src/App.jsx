@@ -35,7 +35,10 @@ function App() {
 
   const [generators, setGenerators] = useState([]);
 
-  const [fractals, setFractals] = useState([generators[0]?.name || ""]);
+  // const [fractals, setFractals] = useState([generators[0]?.name || ""]);
+  const [fractals, setFractals] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const resetParams = () => {
     setDepth(4);
@@ -48,6 +51,7 @@ function App() {
   const onSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    console.log(fractals);
 
     fetch("http://localhost:4001/api/pipeline/run", {
       method: "POST",
@@ -108,7 +112,20 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         setGenerators(data);
-        setFractalType(data[0]?.name || "");
+        console.log(data[0].name);
+
+        setFractals([
+          {
+            type: data[0].name,
+            params: {
+              depth: 4,
+              size: 400,
+              sides: 3,
+            },
+          },
+        ]);
+  
+        setIsLoading(false);
       });
   }, []);
 
@@ -128,72 +145,102 @@ function App() {
     return generator?.defaults;
   };
 
+  const updateFractalParam = (index, key, value) => {
+    setFractals((prev) =>
+      prev.map((f, i) => {
+        if (index !== i) return f;
+        return {
+          ...f,
+          params: {
+            ...f.params,
+            [key]: value,
+          },
+        };
+      }),
+    );
+  };
+
+  const addFractal = (type) => {
+    if (fractals.length >= 3) return;
+
+    const generator = generators.find((g) => g.name === type);
+
+    setFractals((prev) => [
+      ...prev,
+      {
+        type,
+        params: { ...generator.defaults },
+      },
+    ]);
+  };
+
   const getDefaults = (type) => {
     const generator = generators.find((el) => el.name === type);
     return generator?.defaults || {};
   };
 
-  useEffect(() => {
-    resetParams();
+  // useEffect(() => {
+  //   resetParams();
 
-    const generator = setDefaults();
+  //   const generator = setDefaults();
 
-    if (fractalType === "koch") {
-      setHtml(
-        <KochSettings
-          setDepth={setDepth}
-          setSize={setSize}
-          setSides={setSides}
-          usecase={generator}
-        />,
-      );
-    } else if (fractalType === "anklet") {
-      setHtml(
-        <AnkletSettings
-          setDepth={setDepth}
-          setLineLength={setLineLength}
-          setSquareSide={setSquareSide}
-          usecase={generator}
-        />,
-      );
-    } else if (fractalType === "sierpinsky") {
-      setHtml(
-        <SierpinskySettings
-          setDepth={setDepth}
-          setSize={setSize}
-          usecase={generator}
-        />,
-      );
-    } else if (fractalType === "islamicgrid") {
-      setHtml(
-        <IslamicGridSettings
-          setSize={setSize}
-          setRows={setRows}
-          setCols={setCols}
-          usecase={generator}
-        />,
-      );
-    } else if (fractalType === "hexagrid") {
-      setHtml(
-        <HexaGridSettings
-          setSideLength={setSideLength}
-          setRows={setRows}
-          setCols={setCols}
-          usecase={generator}
-        />,
-      );
-    } else if (fractalType === "islamicsquare") {
-      setHtml(
-        <IslamicSquareSetting
-          setSize={setSize}
-          setRows={setRows}
-          setCols={setCols}
-          usecase={generator}
-        />,
-      );
-    }
-  }, [fractalType]);
+  //   if (fractalType === "koch") {
+  //     setHtml(
+  //       <KochSettings
+  //         setDepth={setDepth}
+  //         setSize={setSize}
+  //         setSides={setSides}
+  //         usecase={generator}
+  //       />,
+  //     );
+  //   } else if (fractalType === "anklet") {
+  //     setHtml(
+  //       <AnkletSettings
+  //         setDepth={setDepth}
+  //         setLineLength={setLineLength}
+  //         setSquareSide={setSquareSide}
+  //         usecase={generator}
+  //       />,
+  //     );
+  //   } else if (fractalType === "sierpinsky") {
+  //     setHtml(
+  //       <SierpinskySettings
+  //         setDepth={setDepth}
+  //         setSize={setSize}
+  //         usecase={generator}
+  //       />,
+  //     );
+  //   } else if (fractalType === "islamicgrid") {
+  //     setHtml(
+  //       <IslamicGridSettings
+  //         setSize={setSize}
+  //         setRows={setRows}
+  //         setCols={setCols}
+  //         usecase={generator}
+  //       />,
+  //     );
+  //   } else if (fractalType === "hexagrid") {
+  //     setHtml(
+  //       <HexaGridSettings
+  //         setSideLength={setSideLength}
+  //         setRows={setRows}
+  //         setCols={setCols}
+  //         usecase={generator}
+  //       />,
+  //     );
+  //   } else if (fractalType === "islamicsquare") {
+  //     setHtml(
+  //       <IslamicSquareSetting
+  //         setSize={setSize}
+  //         setRows={setRows}
+  //         setCols={setCols}
+  //         usecase={generator}
+  //       />,
+  //     );
+  //   }
+  // }, [fractalType]);
 
+  
   return (
     <>
       <div className="div">
@@ -235,7 +282,6 @@ function App() {
                   </option>
                 ))}
               </select>
-              {}
               <h3 className="title">Fractal settings</h3>
               {type === "koch" && (
                 <KochSettings
@@ -243,6 +289,8 @@ function App() {
                   setSize={setSize}
                   setSides={setSides}
                   usecase={getDefaults(type)}
+                  updateFractalParam={updateFractalParam}
+                  index={index}
                 />
               )}
               {type === "anklet" && (

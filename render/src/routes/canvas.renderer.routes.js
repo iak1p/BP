@@ -15,7 +15,6 @@ async function render(req, res) {
 
   try {
     const geometry = await getArtifactData(artifactId);
-
     const renderer = new CanvasRenderer(canvasParams);
     const canvas = renderer.render(geometry);
 

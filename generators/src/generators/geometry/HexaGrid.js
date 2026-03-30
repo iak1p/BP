@@ -14,7 +14,7 @@ HexaGrid.prototype = Object.create(Generator.prototype);
 HexaGrid.prototype.constructor = HexaGrid;
 
 HexaGrid.prototype.addSegment = function (a, b) {
-  this.g.addSegment({ a, b });
+  this.g.addLine({ a, b });
 };
 
 HexaGrid.prototype.addHexaShape = function (centerX, centerY, sideLength) {
@@ -46,14 +46,25 @@ HexaGrid.prototype.addHexaShape = function (centerX, centerY, sideLength) {
   this.addSegment({ x: p6.x + innerStarSideLength, y: p6.y }, p1);
 };
 
-HexaGrid.prototype.generateRow = function (colIndex, currentX, currentY, stepX) {
+HexaGrid.prototype.generateRow = function (
+  colIndex,
+  currentX,
+  currentY,
+  stepX,
+) {
   if (colIndex >= this.cols) return;
 
   this.addHexaShape(currentX, currentY, this.sideLength);
   this.generateRow(colIndex + 1, currentX + 2 * stepX, currentY, stepX);
 };
 
-HexaGrid.prototype.generateRows = function (rowIndex, currentY, baseX, stepX, stepY) {
+HexaGrid.prototype.generateRows = function (
+  rowIndex,
+  currentY,
+  baseX,
+  stepX,
+  stepY,
+) {
   if (rowIndex >= this.rows) return;
 
   const startX = rowIndex % 2 === 0 ? baseX + stepX : baseX;

@@ -12,9 +12,9 @@ Sierpinsky.prototype.constructor = Sierpinsky;
 
 Sierpinsky.prototype.subdivide = function (a, b, c, depth) {
   if (depth <= 0) {
-    this.g.addSegment({ a, b });
-    this.g.addSegment({ a: b, b: c });
-    this.g.addSegment({ a: c, b: a });
+    this.g.addLine({ a, b });
+    this.g.addLine({ a: b, b: c });
+    this.g.addLine({ a: c, b: a });
     return;
   }
 

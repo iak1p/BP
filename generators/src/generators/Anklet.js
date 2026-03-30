@@ -1,4 +1,4 @@
-import { GeometryDTO, Generator, PatternDTO } from "../utils/generator.base.js";
+import { GeometryDTO, Generator } from "../utils/generator.base.js";
 
 function Anklet(opts) {
   Generator.call(this);
@@ -8,7 +8,7 @@ function Anklet(opts) {
   this.squareSide = (opts && opts.squareSide) || 20;
 
   this.hypotenuseSquare = Math.round(
-    Math.sqrt(2 * this.squareSide * this.squareSide)
+    Math.sqrt(2 * this.squareSide * this.squareSide),
   );
   this.halfHyp = Math.round(this.hypotenuseSquare / 2);
   this.moveToBase = this.lineLength + this.hypotenuseSquare;
@@ -22,12 +22,35 @@ Anklet.prototype._addRotatedSquare = function (cx, cy) {
   const bottom = { x: cx, y: cy + h };
   const left = { x: cx - h, y: cy };
 
-  this.g.addSegment({ a: top, b: right });
-  this.g.addSegment({ a: right, b: bottom });
-  this.g.addSegment({ a: bottom, b: left });
-  this.g.addSegment({ a: left, b: top });
+  // Квадраты
+  // this.g.addLine({ a: top, b: right });
+  // this.g.addLine({ a: right, b: bottom });
+  // this.g.addLine({ a: bottom, b: left });
+  // this.g.addLine({ a: left, b: top });
+
+  this.g.addPolygon([top, right, bottom, left]);
 
   return { top, right, bottom, left };
+};
+
+Anklet.prototype.polygonToEdges = function (geometry) {
+  const { objects } = geometry;
+  const edges = [];
+
+  for (const obj of objects) {
+    const { points } = obj;
+    if (!Array.isArray(points) || points.length < 2) {
+      continue;
+    }
+
+    for (let i = 0; i < points.length; i++) {
+      const a = points[i];
+      const b = points[(i + 1) % points.length];
+      edges.push({ a, b });
+    }
+  }
+
+  return edges;
 };
 
 Anklet.prototype.subdivide = function (cx, cy, depth) {
@@ -35,19 +58,19 @@ Anklet.prototype.subdivide = function (cx, cy, depth) {
 
   const mid = this._addRotatedSquare(cx, cy);
 
-  this.g.addSegment({
+  this.g.addLine({
     a: { x: mid.top.x, y: mid.top.y },
     b: { x: mid.top.x, y: mid.top.y - this.lineLength },
   });
-  this.g.addSegment({
+  this.g.addLine({
     a: { x: mid.bottom.x, y: mid.bottom.y },
     b: { x: mid.bottom.x, y: mid.bottom.y + this.lineLength },
   });
-  this.g.addSegment({
+  this.g.addLine({
     a: { x: mid.left.x, y: mid.left.y },
     b: { x: mid.left.x - this.lineLength, y: mid.left.y },
   });
-  this.g.addSegment({
+  this.g.addLine({
     a: { x: mid.right.x, y: mid.right.y },
     b: { x: mid.right.x + this.lineLength, y: mid.right.y },
   });
