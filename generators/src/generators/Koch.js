@@ -6,6 +6,7 @@ function Koch(opts) {
   this.center = (opts && opts.center) || { x: 0, y: 0 };
   this.size = (opts && opts.size) || 200;
   this.sides = (opts && opts.sides) || 3;
+  this.depth = (opts && opts.depth) || 3;
   this.outward = false;
 }
 Koch.prototype = Object.create(Generator.prototype);
@@ -63,8 +64,8 @@ Koch.prototype.generateFromEdges = function (edges, depth) {
   return this.g;
 };
 
-Koch.prototype.generate = function (patternDTO) {
-  const depth = patternDTO.depth | 0;
+Koch.prototype.generate = function () {
+  // const depth = patternDTO.depth | 0;
 
   const poly = this.polygonVertices(
     this.center.x,
@@ -78,10 +79,10 @@ Koch.prototype.generate = function (patternDTO) {
   for (let i = 0; i < poly.length; i++) {
     const a = poly[i];
     const b = poly[(i + 1) % poly.length];
-    this.subdivide(a, b, depth, sign, 0);
+    this.subdivide(a, b, this.depth, sign, 0);
   }
 
-  this.g.meta.depth = depth;
+  this.g.meta.depth = this.depth;
   this.g.meta.sides = this.sides;
   this.g.meta.outward = this.outward;
 
@@ -104,9 +105,10 @@ export default {
   id: "koch",
   name: "koch",
   defaults: {
-    center: { x: 400, y: 300 },
     size: 200,
-    sides: 2,
+    sides: 4,
+    depth: 3,
+    center: { x: 0, y: 0 },
   },
   Generator: Koch,
 };

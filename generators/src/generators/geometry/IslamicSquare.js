@@ -13,7 +13,6 @@ function IslamicSquare(opts) {
 IslamicSquare.prototype = Object.create(Generator.prototype);
 IslamicSquare.prototype.constructor = IslamicSquare;
 
-
 IslamicSquare.prototype.drawTile = function (sideLength, centerX, centerY) {
   const d = (sideLength * Math.sqrt(2)) / 2;
 
@@ -27,14 +26,14 @@ IslamicSquare.prototype.drawTile = function (sideLength, centerX, centerY) {
   const bottomRight = { x: centerX + d, y: centerY + d };
   const bottomLeft = { x: centerX - d, y: centerY + d };
 
-//   this.addLine(top.x, top.y, topRight.x, topRight.y);
-//   this.addLine(topRight.x, topRight.y, right.x, right.y);
-//   this.addLine(right.x, right.y, bottomRight.x, bottomRight.y);
-//   this.addLine(bottomRight.x, bottomRight.y, bottom.x, bottom.y);
-//   this.addLine(bottom.x, bottom.y, bottomLeft.x, bottomLeft.y);
-//   this.addLine(bottomLeft.x, bottomLeft.y, left.x, left.y);
-//   this.addLine(left.x, left.y, topLeft.x, topLeft.y);
-//   this.addLine(topLeft.x, topLeft.y, top.x, top.y);
+  //   this.addLine(top.x, top.y, topRight.x, topRight.y);
+  //   this.addLine(topRight.x, topRight.y, right.x, right.y);
+  //   this.addLine(right.x, right.y, bottomRight.x, bottomRight.y);
+  //   this.addLine(bottomRight.x, bottomRight.y, bottom.x, bottom.y);
+  //   this.addLine(bottom.x, bottom.y, bottomLeft.x, bottomLeft.y);
+  //   this.addLine(bottomLeft.x, bottomLeft.y, left.x, left.y);
+  //   this.addLine(left.x, left.y, topLeft.x, topLeft.y);
+  //   this.addLine(topLeft.x, topLeft.y, top.x, top.y);
 
   this.g.addPolygon(
     [top, topRight, right, bottomRight, bottom, bottomLeft, left, topLeft],
@@ -76,7 +75,7 @@ export default {
   id: "islamicsquare",
   name: "islamicsquare",
   defaults: {
-    center: { x: 400, y: 300 },
+    center: { x: 0, y: 0 },
     size: 70,
     rows: 2,
     cols: 2,

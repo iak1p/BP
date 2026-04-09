@@ -113,7 +113,7 @@ export default {
   id: "islamicgrid",
   name: "islamicgrid",
   defaults: {
-    center: { x: 400, y: 300 },
+    center: { x: 0, y: 0 },
     size: 70,
     rows: 2,
     cols: 2,

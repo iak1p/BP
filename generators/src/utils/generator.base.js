@@ -73,8 +73,8 @@ GeometryDTO.prototype.addPolygon = function (points) {
   });
 };
 
-export function PatternDTO(type, depth, options = {}) {
+export function PatternDTO(type, params = {}) {
+  if (!type) throw new Error("Type is required");
   this.type = type;
-  this.depth = depth | 0;
-  this.options = options;
+  this.params = params;
 }

@@ -4,10 +4,10 @@ function HexaGrid(opts) {
   Generator.call(this);
   this.g = new GeometryDTO();
 
-  this.center = (opts && opts.center) || { x: 400, y: 300 };
-  this.sideLength = (opts && opts.sideLength) || 80;
-  this.rows = (opts && opts.rows) || 6;
-  this.cols = (opts && opts.cols) || 6;
+  this.center = (opts && opts.center) || { x: 0, y: 0 };
+  this.sideLength = (opts && opts.sideLength) || 70;
+  this.rows = (opts && opts.rows) || 2;
+  this.cols = (opts && opts.cols) || 2;
 }
 
 HexaGrid.prototype = Object.create(Generator.prototype);
@@ -73,29 +73,21 @@ HexaGrid.prototype.generateRows = function (
   this.generateRows(rowIndex + 1, currentY + stepY, baseX, stepX, stepY);
 };
 
-HexaGrid.prototype.generate = function (patternDTO) {
-  const rows = patternDTO.rows ?? this.rows;
-  const cols = patternDTO.cols ?? this.cols;
-  const sideLength = patternDTO.sideLength ?? this.sideLength;
+HexaGrid.prototype.generate = function () {
+  const stepX = this.sideLength * Math.sin(Math.PI / 3);
+  const stepY = this.sideLength + this.sideLength * Math.sin(Math.PI / 6);
 
-  this.rows = rows;
-  this.cols = cols;
-  this.sideLength = sideLength;
-
-  const stepX = sideLength * Math.sin(Math.PI / 3);
-  const stepY = sideLength + sideLength * Math.sin(Math.PI / 6);
-
-  const gridWidth = (cols - 1) * 2 * stepX + 3 * stepX;
-  const gridHeight = (rows - 1) * stepY + 2 * sideLength;
+  const gridWidth = (this.cols - 1) * 2 * stepX + 3 * stepX;
+  const gridHeight = (this.rows - 1) * stepY + 2 * this.sideLength;
 
   const baseX = this.center.x - gridWidth / 2 + stepX;
-  const startY = this.center.y - gridHeight / 2 + sideLength;
+  const startY = this.center.y - gridHeight / 2 + this.sideLength;
 
   this.generateRows(0, startY, baseX, stepX, stepY);
 
-  this.g.meta.rows = rows;
-  this.g.meta.cols = cols;
-  this.g.meta.sideLength = sideLength;
+  this.g.meta.rows = this.rows;
+  this.g.meta.cols = this.cols;
+  this.g.meta.sideLength = this.sideLength;
 
   return this.g;
 };
@@ -104,7 +96,7 @@ export default {
   id: "hexagrid",
   name: "hexagrid",
   defaults: {
-    center: { x: 400, y: 300 },
+    center: { x: 0, y: 0 },
     sideLength: 70,
     rows: 2,
     cols: 2,

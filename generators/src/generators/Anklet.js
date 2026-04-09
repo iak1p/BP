@@ -6,6 +6,7 @@ function Anklet(opts) {
   this.center = (opts && opts.center) || { x: 0, y: 0 };
   this.lineLength = (opts && opts.lineLength) || 20;
   this.squareSide = (opts && opts.squareSide) || 20;
+  this.depth = (opts && opts.depth) || 3;
 
   this.hypotenuseSquare = Math.round(
     Math.sqrt(2 * this.squareSide * this.squareSide),
@@ -92,13 +93,13 @@ Anklet.prototype.subdivide = function (cx, cy, depth) {
 };
 
 Anklet.prototype.generate = function (patternDTO) {
-  const depth =
-    patternDTO && Number.isFinite(patternDTO.depth) ? patternDTO.depth : 1;
+  // const depth =
+  //   patternDTO && Number.isFinite(patternDTO.depth) ? patternDTO.depth : 1;
 
-  this.subdivide(this.center.x, this.center.y, depth);
+  this.subdivide(this.center.x, this.center.y, this.depth);
 
   this.g.meta.type = "anklet";
-  this.g.meta.depth = depth;
+  this.g.meta.depth = this.depth;
   this.g.meta.lineLength = this.lineLength;
   this.g.meta.squareSide = this.squareSide;
 
@@ -112,6 +113,7 @@ export default {
     center: { x: 0, y: 0 },
     lineLength: 20,
     squareSide: 20,
+    depth: 3,
   },
   Generator: Anklet,
 };

@@ -23,95 +23,27 @@ CompositeGenerator.prototype.mergeGeometry = function (geometry) {
   }
 };
 
-// CompositeGenerator.prototype.polygonToEdges = function (geometry) {
-//   const { objects } = geometry;
-//   const edges = [];
-
-//   for (const obj of objects) {
-//     const { points } = obj;
-//     if (!Array.isArray(points) || points.length < 2) {
-//       continue;
-//     }
-
-//     for (let i = 0; i < points.length; i++) {
-//       const a = points[i];
-//       const b = points[(i + 1) % points.length];
-//       edges.push({ a, b });
-//     }
-//   }
-
-//   return edges;
-// };
-
-// CompositeGenerator.prototype.generate = async function (patternDTO) {
-//   console.log(patternDTO);
-//   const { patterns, ...otherOptions } = patternDTO?.options;
-
-//   if (patterns.length === 0) {
-//     throw new Error("No patterns selected for composite generator");
-//   }
-
-//   try {
-//     const availableGenerators = await getAvailableGenerators();
-//     const allowedTypes = availableGenerators.map((g) => g.id);
-
-//     for (const type of patterns) {
-//       if (!allowedTypes.includes(type)) {
-//         throw new Error(
-//           `Invalid type. Allowed values are: ${allowedTypes.join(", ")}`,
-//         );
-//       }
-
-//       if (type === "composite") {
-//         throw new Error("Composite generator cannot include itself");
-//       }
-
-//       const childGenerator = await createFractal(type, otherOptions);
-
-//       const childPattern = new PatternDTO(
-//         type,
-//         patternDTO.depth,
-//         patternDTO.options || {},
-//       );
-
-//       const childGeometry = await childGenerator.generate(childPattern);
-//       this.mergeGeometry(childGeometry);
-//     }
-
-//     this.g.meta.type = "composite";
-//     // this.g.meta.patterns = patterns;
-//     this.g.meta.depth = patternDTO.depth;
-//     this.g.meta.options = patternDTO.options || {};
-
-//     return this.g;
-//   } catch (err) {
-//     throw err;
-//   }
-// };
-
 CompositeGenerator.prototype.removePolygons = function () {
   if (!Array.isArray(this.g.objects)) return;
 
   this.g.objects = this.g.objects.filter((obj) => obj.type !== "polygon");
 };
 
-CompositeGenerator.prototype.generateKochFromAnklet = async function (
-  patternDTO,
-  otherOptions,
-) {
-  const ankletGenerator = await createFractal("anklet", otherOptions);
-  const ankletPattern = new PatternDTO(
-    "anklet",
-    patternDTO.depth,
-    patternDTO.options || {},
+CompositeGenerator.prototype.generateKochFromAnklet = async function (options) {
+  const { anklet, koch } = options;
+
+  const ankletPattern = new PatternDTO("anklet", anklet);
+  const ankletGenerator = await createFractal(
+    ankletPattern.type,
+    ankletPattern.params,
   );
 
-  const ankletGeometry = await ankletGenerator.generate(ankletPattern);
+  const ankletGeometry = await ankletGenerator.generate();
   const seedEdges = ankletGenerator.polygonToEdges(ankletGeometry);
   this.mergeGeometry(ankletGeometry);
 
-  const kochGenerator = await createFractal("koch", otherOptions);
-  const kochDepth = patternDTO.depth;
+  const kochGenerator = await createFractal("koch", koch);
+  const kochDepth = koch.depth;
 
   const kochGeometry = kochGenerator.generateFromEdges(seedEdges, kochDepth);
   this.mergeGeometry(kochGeometry);
@@ -120,7 +52,7 @@ CompositeGenerator.prototype.generateKochFromAnklet = async function (
 };
 
 CompositeGenerator.prototype.generate = async function (patternDTO) {
-  const { patterns = [], ...otherOptions } = patternDTO?.options || {};
+  const { patterns = [] } = patternDTO?.params || {};
 
   if (patterns.length === 0) {
     throw new Error("No patterns selected for composite generator");
@@ -130,53 +62,59 @@ CompositeGenerator.prototype.generate = async function (patternDTO) {
     const availableGenerators = await getAvailableGenerators();
     const allowedTypes = availableGenerators.map((g) => g.id);
 
-    for (const type of patterns) {
-      if (!allowedTypes.includes(type)) {
+    for (const fractal of patterns) {
+      if (!allowedTypes.includes(fractal.type)) {
         throw new Error(
           `Invalid type. Allowed values are: ${allowedTypes.join(", ")}`,
         );
       }
 
-      if (type === "composite") {
+      if (fractal.type === "composite") {
         throw new Error("Composite generator cannot include itself");
       }
     }
 
-    const hasAnklet = patterns.includes("anklet");
-    const hasKoch = patterns.includes("koch");
+    const hasAnklet = patterns.some((f) => f.type === "anklet");
+    const hasKoch = patterns.some((f) => f.type === "koch");
 
     if (hasAnklet && hasKoch) {
-      await this.generateKochFromAnklet(patternDTO, otherOptions);
+      const anklet = patterns.find((p) => p.type === "anklet");
+      const koch = patterns.find((p) => p.type === "koch");
 
-      for (const type of patterns) {
-        if (type === "anklet" || type === "koch") continue;
+      await this.generateKochFromAnklet({
+        anklet: anklet?.params,
+        koch: koch?.params,
+      });
 
-        const childGenerator = await createFractal(type, otherOptions);
-        const childPattern = new PatternDTO(
-          type,
-          patternDTO.depth,
-          patternDTO.options || {},
+      for (const fractal of patterns) {
+        if (fractal.type === "anklet" || fractal.type === "koch") continue;
+
+        const childPattern = new PatternDTO(fractal.type, fractal.params);
+
+        const childGenerator = await createFractal(
+          childPattern.type,
+          childPattern.params,
         );
 
-        const childGeometry = await childGenerator.generate(childPattern);
+        const childGeometry = await childGenerator.generate();
         this.mergeGeometry(childGeometry);
       }
     } else {
-      for (const type of patterns) {
-        const childGenerator = await createFractal(type, otherOptions);
-        const childPattern = new PatternDTO(
-          type,
-          patternDTO.depth,
-          patternDTO.options || {},
+      for (const fractal of patterns) {
+        const childPattern = new PatternDTO(fractal.type, fractal.params);
+
+        const childGenerator = await createFractal(
+          childPattern.type,
+          childPattern.params,
         );
 
-        const childGeometry = await childGenerator.generate(childPattern);
+        const childGeometry = await childGenerator.generate();
         this.mergeGeometry(childGeometry);
       }
     }
 
     this.g.meta.type = "composite";
-    this.g.meta.depth = patternDTO.depth;
+    // this.g.meta.depth = patternDTO.depth;
     this.g.meta.options = patternDTO.options || {};
 
     return this.g;
@@ -189,11 +127,6 @@ export default {
   id: "composite",
   name: "composite",
   defaults: {
-    center: { x: 400, y: 300 },
-    size: 70,
-    sideLength: 70,
-    rows: 2,
-    cols: 2,
     patterns: [],
   },
   Generator: CompositeGenerator,

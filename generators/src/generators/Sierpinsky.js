@@ -5,6 +5,7 @@ function Sierpinsky(opts) {
   this.g = new GeometryDTO();
   this.center = (opts && opts.center) || { x: 0, y: 0 };
   this.size = (opts && opts.size) || 200;
+  this.depth = (opts && opts.depth) || 3;
   this.sides = 3;
 }
 Sierpinsky.prototype = Object.create(Generator.prototype);
@@ -39,7 +40,7 @@ Sierpinsky.prototype.polygonVertices = function (cx, cy, n, sideLen) {
 };
 
 Sierpinsky.prototype.generate = function (patternDTO) {
-  const depth = patternDTO.depth | 0;
+  // const depth = patternDTO.depth | 0;
 
   const [a, b, c] = this.polygonVertices(
     this.center.x,
@@ -48,9 +49,9 @@ Sierpinsky.prototype.generate = function (patternDTO) {
     this.size,
   );
 
-  this.subdivide(a, b, c, depth);
+  this.subdivide(a, b, c, this.depth);
 
-  this.g.meta.depth = depth;
+  this.g.meta.depth = this.depth;
   this.g.meta.sides = this.sides;
   return this.g;
 };
@@ -61,6 +62,7 @@ export default {
   defaults: {
     center: { x: 0, y: 0 },
     size: 200,
+    depth: 3,
   },
   Generator: Sierpinsky,
 };

@@ -9,13 +9,14 @@ import { createArtifact } from "../utils/db.js";
 const generatorRoutes = new Router();
 
 const generate = async (req, res) => {
+  const start = performance.now();
   const { type = null, params = {} } = req.body ?? {};
   const { depth = null, ...otherParams } = params;
   console.log(params);
 
-  if (!type || depth === null || depth === undefined) {
+  if (!type) {
     return res.status(400).json({
-      error: "Missing required fields: type and depth.",
+      error: "Missing required field: type",
     });
   }
 
@@ -29,11 +30,20 @@ const generate = async (req, res) => {
       });
     }
 
-    const pattern = new PatternDTO(type, depth, otherParams);
+    const pattern = new PatternDTO(type, otherParams);
     const fractal = await createFractal(type, otherParams);
     const geometry = await fractal.generate(pattern);
-    
+
     const artifactId = await createArtifact(type, JSON.stringify(geometry));
+
+    const duration = performance.now() - start;
+    console.log(
+      JSON.stringify({
+        service: "generate",
+        durationMs: duration,
+        depth: req.body?.params.patterns[0]?.params?.depth ?? null,
+      }),
+    );
 
     return res.status(200).json({ artifactId });
   } catch (err) {
