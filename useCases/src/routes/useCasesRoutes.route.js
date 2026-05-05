@@ -7,26 +7,9 @@ import {
 
 const useCasesRoutes = new Router();
 
-/**
- * Applies use cases to an existing artifact.
- *
- * Request body:
- * {
- *   artifactId: string,
- *   usecases: [
- *     {
- *       name: string,
- *       otherParams: any
- *     },
- *   ]
- * }
- *
- * Response:
- * {
- *   artifact: Object
- * }
- */
 const applyUseCasesToArtifact = async (req, res) => {
+  const start = performance.now();
+  const mem = process.memoryUsage();
   const { artifactId = null, usecases = [] } = req.body ?? {};
 
   if (!artifactId) {
@@ -40,7 +23,7 @@ const applyUseCasesToArtifact = async (req, res) => {
 
     for (const useCaseDef of usecases) {
       try {
-        const usecase = await createUseCase(useCaseDef);
+        const usecase = await createUseCase(useCaseDef);        
         usecase.apply(artifact);
       } catch (err) {
         throw err;
@@ -48,6 +31,17 @@ const applyUseCasesToArtifact = async (req, res) => {
     }
 
     await updateArtifactData(artifactId, artifact);
+
+    const duration = performance.now() - start;
+    console.log(
+      JSON.stringify({
+        service: "usecases_apply",
+        durationMs: duration,
+        depth: artifact.meta.options.patterns[0].params.depth ?? null,
+        heapUsedMb: mem.heapUsed / 1024 / 1024,
+        rssMb: mem.rss / 1024 / 1024,
+      }),
+    );
     return res.status(200).json({ artifactId });
   } catch (err) {
     return res.status(500).json({ error: err.message });

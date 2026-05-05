@@ -7,18 +7,6 @@ export default function CanvasRenderer(opt) {
   this.height = (opt && opt.height) || 600;
 }
 
-// CanvasRenderer.prototype.drawLine = function (ctx, seg) {
-//   // console.log(seq);
-
-//   ctx.beginPath();
-//   ctx.moveTo(seg.a.x, seg.a.y);
-//   ctx.lineTo(seg.b.x, seg.b.y);
-
-//   ctx.strokeStyle = seg.color || "#afafaf";
-//   ctx.lineWidth = seg.width || 1;
-//   ctx.stroke();
-// };
-
 CanvasRenderer.prototype.drawLine = function (ctx, line) {
   const { style = {} } = line;
   ctx.beginPath();
@@ -32,7 +20,6 @@ CanvasRenderer.prototype.drawLine = function (ctx, line) {
 
 CanvasRenderer.prototype.drawPolygon = function (ctx, polygon) {
   const { points = [], style = {} } = polygon;
-  console.log(polygon);
 
   if (!Array.isArray(points) || points.length < 3) return;
 
@@ -44,11 +31,6 @@ CanvasRenderer.prototype.drawPolygon = function (ctx, polygon) {
   }
 
   ctx.closePath();
-
-  // if (style.fillColor) {
-  //   ctx.fillStyle = style.fillColor;
-  //   ctx.fill();
-  // }
 
   ctx.strokeStyle = style.color || "#afafaf";
   ctx.lineWidth = style.width || 1;
@@ -67,7 +49,7 @@ CanvasRenderer.prototype.render = function (geometry) {
   const cx = this.width / 2;
   const cy = this.height / 2;
 
-  const transforms = geometry.meta?.transforms || [];
+  const transforms = geometry.meta?.transforms || [];  
 
   for (const transform of transforms) {    
     switch (transform.type) {
@@ -85,7 +67,7 @@ CanvasRenderer.prototype.render = function (geometry) {
     }
   }
 
-  const objects = geometry.objects || [];
+  const objects = geometry.objects || [];  
 
   for (const obj of objects) {
     switch (obj.type) {
@@ -114,7 +96,6 @@ CanvasRenderer.prototype.render = function (geometry) {
   const out = fs.createWriteStream(`${dir}/file_${fileName}.png`);
   const stream = canvas.createPNGStream();
   stream.pipe(out);
-  out.on("finish", () => console.log(`Saved → file_${fileName}.png`));
-
+  
   return canvas;
 };

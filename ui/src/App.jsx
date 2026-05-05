@@ -1,57 +1,36 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import CanvasSettings from "./components/CanvasSettings";
-import KochSettings from "./components/KochSettings";
-import AnkletSettings from "./components/AnkletSettings";
+import KochSettings from "./components/FractalsSettings/KochSettings";
+import AnkletSettings from "./components/FractalsSettings/AnkletSettings";
 import Usecases from "./components/Usecases";
 import Console from "./components/Console";
-import SierpinskySettings from "./components/SierpinskySettings";
-import HexaGridSettings from "./components/HexaGridSettings";
-import IslamicGridSettings from "./components/IslamicGridSettings";
-import IslamicSquareSetting from "./components/IslamicSquareSetting";
+import IslamicGridSettings from "./components/FractalsSettings/IslamicGridSettings";
+import HexaGridSettings from "./components/FractalsSettings/HexaGridSettings";
+import IslamicSquareSettings from "./components/FractalsSettings/IslamicSquareSettings";
+import SierpinskySettings from "./components/FractalsSettings/SierpinskySettings";
 
 function App() {
   const [canvasSize, setCanvasSize] = useState({ x: 800, y: 600 });
   const [canvasColor, setCanvasColor] = useState("#000000");
-  const [fractalType, setFractalType] = useState("");
-  const [html, setHtml] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [depth, setDepth] = useState(4);
-  const [size, setSize] = useState(400);
-  const [sides, setSides] = useState(3);
-  const [lineLength, setLineLength] = useState(10);
-  const [squareSide, setSquareSide] = useState(10);
-  const [rows, setRows] = useState(2);
-  const [cols, setCols] = useState(2);
-  const [sideLength, setSideLength] = useState(40);
-
   const [imageUrl, setImageUrl] = useState("");
 
   const [useCaseColor, setUseCaseColor] = useState(null);
+  const [useCaseColorByDepth, setUseCaseColorByDepth] = useState(null);
   const [useCaseScale, setUseCaseScale] = useState(null);
   const [useCaseRotation, setUseCaseRotation] = useState(null);
   const [useCaseThick, setUseCaseThick] = useState(null);
 
   const [generators, setGenerators] = useState([]);
 
-  // const [fractals, setFractals] = useState([generators[0]?.name || ""]);
   const [fractals, setFractals] = useState([]);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  const resetParams = () => {
-    setDepth(4);
-    setSize(400);
-    setSides(3);
-    setLineLength(10);
-    setSquareSide(10);
-  };
 
   const onSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(fractals);
 
     fetch("http://localhost:4001/api/pipeline/run", {
       method: "POST",
@@ -61,16 +40,16 @@ function App() {
       body: JSON.stringify({
         type: "composite",
         params: {
-          depth,
-          size,
-          patterns: fractals,
-          sides,
-          center: { x: canvasSize.x / 2, y: canvasSize.y / 2 },
-          lineLength,
-          squareSide,
-          rows,
-          cols,
-          sideLength,
+          patterns: fractals.map((f) => ({
+            ...f,
+            params: {
+              ...f.params,
+              center: {
+                x: canvasSize.x / 2,
+                y: canvasSize.y / 2,
+              },
+            },
+          })),
         },
         canvasParams: {
           width: canvasSize.x,
@@ -79,6 +58,7 @@ function App() {
         },
         usecases: [
           useCaseColor,
+          useCaseColorByDepth,
           useCaseScale,
           useCaseRotation,
           useCaseThick,
@@ -93,18 +73,22 @@ function App() {
           if (prev) URL.revokeObjectURL(prev);
           return url;
         });
-        // response.json();
-      })
-      .then((data) => {
-        console.log("Success:", data);
       })
       .catch((error) => {
         console.error("Error:", error);
       })
       .finally(() => {
         setLoading(false);
-        // resetParams();
       });
+  };
+
+  const settingsComponents = {
+    koch: KochSettings,
+    anklet: AnkletSettings,
+    sierpinsky: SierpinskySettings,
+    islamicgrid: IslamicGridSettings,
+    hexagrid: HexaGridSettings,
+    islamicsquare: IslamicSquareSettings,
   };
 
   useEffect(() => {
@@ -112,38 +96,15 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         setGenerators(data);
-        console.log(data[0].name);
 
         setFractals([
           {
             type: data[0].name,
-            params: {
-              depth: 4,
-              size: 400,
-              sides: 3,
-            },
+            params: data[0].defaults,
           },
         ]);
-  
-        setIsLoading(false);
       });
   }, []);
-
-  const setDefaults = (type) => {
-    const generator = generators.find((el) => el.name === type);
-
-    console.log(generator?.defaults);
-
-    setDepth(4);
-    setSize(generator?.defaults?.size);
-    setSides(generator?.defaults?.sides);
-    setLineLength(generator?.defaults?.lineLength);
-    setSquareSide(generator?.defaults?.squareSide);
-    setRows(generator?.defaults?.rows);
-    setCols(generator?.defaults?.cols);
-
-    return generator?.defaults;
-  };
 
   const updateFractalParam = (index, key, value) => {
     setFractals((prev) =>
@@ -160,16 +121,16 @@ function App() {
     );
   };
 
-  const addFractal = (type) => {
+  const addFractal = () => {
     if (fractals.length >= 3) return;
 
-    const generator = generators.find((g) => g.name === type);
+    const generator = generators[0];
 
     setFractals((prev) => [
       ...prev,
       {
-        type,
-        params: { ...generator.defaults },
+        type: generator.name,
+        params: generator.defaults,
       },
     ]);
   };
@@ -179,68 +140,21 @@ function App() {
     return generator?.defaults || {};
   };
 
-  // useEffect(() => {
-  //   resetParams();
+  const changeFractalType = (type, index) => {
+    const defaultParams = getDefaults(type);
 
-  //   const generator = setDefaults();
+    setFractals((prev) =>
+      prev.map((item, i) => {
+        if (index !== i) return item;
 
-  //   if (fractalType === "koch") {
-  //     setHtml(
-  //       <KochSettings
-  //         setDepth={setDepth}
-  //         setSize={setSize}
-  //         setSides={setSides}
-  //         usecase={generator}
-  //       />,
-  //     );
-  //   } else if (fractalType === "anklet") {
-  //     setHtml(
-  //       <AnkletSettings
-  //         setDepth={setDepth}
-  //         setLineLength={setLineLength}
-  //         setSquareSide={setSquareSide}
-  //         usecase={generator}
-  //       />,
-  //     );
-  //   } else if (fractalType === "sierpinsky") {
-  //     setHtml(
-  //       <SierpinskySettings
-  //         setDepth={setDepth}
-  //         setSize={setSize}
-  //         usecase={generator}
-  //       />,
-  //     );
-  //   } else if (fractalType === "islamicgrid") {
-  //     setHtml(
-  //       <IslamicGridSettings
-  //         setSize={setSize}
-  //         setRows={setRows}
-  //         setCols={setCols}
-  //         usecase={generator}
-  //       />,
-  //     );
-  //   } else if (fractalType === "hexagrid") {
-  //     setHtml(
-  //       <HexaGridSettings
-  //         setSideLength={setSideLength}
-  //         setRows={setRows}
-  //         setCols={setCols}
-  //         usecase={generator}
-  //       />,
-  //     );
-  //   } else if (fractalType === "islamicsquare") {
-  //     setHtml(
-  //       <IslamicSquareSetting
-  //         setSize={setSize}
-  //         setRows={setRows}
-  //         setCols={setCols}
-  //         usecase={generator}
-  //       />,
-  //     );
-  //   }
-  // }, [fractalType]);
+        return {
+          type: type,
+          params: defaultParams,
+        };
+      }),
+    );
+  };
 
-  
   return (
     <>
       <div className="div">
@@ -252,87 +166,57 @@ function App() {
         >
           <h3 className="title">
             Select fractal type
-            <button
-              type="button"
-              onClick={() => {
-                if (fractals.length < 3) {
-                  setFractals((prev) => [...prev, generators[0]?.name]);
-                }
-              }}
-            >
-              add
+            <button type="button" onClick={() => addFractal()}>
+              Add fractal
             </button>
           </h3>
-          {fractals.map((type, index) => (
-            <div className="">
-              <select
-                key={index}
-                value={type}
-                onChange={(e) =>
-                  setFractals((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? e.target.value : item,
-                    ),
-                  )
-                }
-              >
-                {generators.map((g) => (
-                  <option key={g.id} value={g.name}>
-                    {g.name}
-                  </option>
-                ))}
-              </select>
-              <h3 className="title">Fractal settings</h3>
-              {type === "koch" && (
-                <KochSettings
-                  setDepth={setDepth}
-                  setSize={setSize}
-                  setSides={setSides}
-                  usecase={getDefaults(type)}
-                  updateFractalParam={updateFractalParam}
-                  index={index}
-                />
-              )}
-              {type === "anklet" && (
-                <AnkletSettings
-                  setDepth={setDepth}
-                  setLineLength={setLineLength}
-                  setSquareSide={setSquareSide}
-                  usecase={getDefaults(type)}
-                />
-              )}
-              {type === "sierpinsky" && <SierpinskySettings />}
-              {type === "islamicgrid" && <IslamicGridSettings />}
-              {type === "hexagrid" && <HexaGridSettings />}
-              {type === "islamicsquare" && <IslamicSquareSetting />}
-            </div>
-          ))}
+          {fractals.map((type, index) => {
+            const SettingsComponent = settingsComponents[type.type];
 
-          {/* <div className="">
-            <select
-              id="type"
-              name=""
-              class=""
-              value={fractalType}
-              onChange={(e) => setFractalType(e.target.value)}
-            >
-              {generators.map((g) => (
-                <option key={g.id} value={g.name}>
-                  {g.name}
-                </option>
-              ))}
-            </select>
-          </div> */}
+            return (
+              <div className="">
+                <select
+                  key={index}
+                  value={type.type}
+                  onChange={(e) => changeFractalType(e.target.value, index)}
+                >
+                  {generators.map((g) => {
+                    if (g.name === "composite") return;
+                    return (
+                      <option key={g.id} value={g.name}>
+                        {g.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFractals((prev) => prev.filter((_, i) => i !== index));
+                  }}
+                >
+                  Remove
+                </button>
+
+                {SettingsComponent && (
+                  <SettingsComponent
+                    defaultParams={type.params}
+                    updateFractalParam={updateFractalParam}
+                    index={index}
+                  />
+                )}
+              </div>
+            );
+          })}
 
           <CanvasSettings
             canvasSize={canvasSize}
             setCanvasSize={setCanvasSize}
             setCanvasColor={setCanvasColor}
           />
-          {/* <h3 className="title">Fractal settings</h3> */}
-          {/* <div className="">{html}</div> */}
           <Usecases
             setUseCaseColor={setUseCaseColor}
+            setUseCaseColorByDepth={setUseCaseColorByDepth}
             setUseCaseScale={setUseCaseScale}
             setUseCaseRotation={setUseCaseRotation}
             setUseCaseThick={setUseCaseThick}

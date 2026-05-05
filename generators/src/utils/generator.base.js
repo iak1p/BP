@@ -20,7 +20,7 @@ GeometryDTO.prototype._key = function (p, q) {
   return k1 < k2 ? k1 : k2;
 };
 
-GeometryDTO.prototype.addLine = function ({ a, b }) {
+GeometryDTO.prototype.addLine = function ({ a, b, depth }) {
   const key = this._key(a, b);
 
   if (this._seen.has(key)) return;
@@ -31,6 +31,7 @@ GeometryDTO.prototype.addLine = function ({ a, b }) {
     type: "line",
     a,
     b,
+    depth,
     style: {},
   });
 };
@@ -55,7 +56,7 @@ GeometryDTO.prototype._polygonKey = function (points) {
   return rotations.sort()[0];
 };
 
-GeometryDTO.prototype.addPolygon = function (points) {
+GeometryDTO.prototype.addPolygon = function (points, depth) {
   if (!Array.isArray(points) || points.length < 3) {
     throw new Error("Polygon must contain at least 3 points");
   }
@@ -69,6 +70,7 @@ GeometryDTO.prototype.addPolygon = function (points) {
   this.objects.push({
     type: "polygon",
     points,
+    depth,
     style: {},
   });
 };

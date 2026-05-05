@@ -23,7 +23,6 @@ async function loadUseCaseModules() {
       const mod = imported.default;
 
       if (!mod || !mod.id || !mod.name || !mod.UseCase) {
-        console.warn(`Invalid use case module: ${file}`);
         continue;
       }
 
@@ -42,10 +41,6 @@ export async function getAvailableUseCases() {
   return modules.map(({ UseCase, ...meta }) => meta);
 }
 
-/**
- * Example input:
- * { name: "width", width: 1 }
- */
 export async function createUseCase(usecase) {
   const { name = null, ...params } = usecase;
 

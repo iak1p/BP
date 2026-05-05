@@ -5,6 +5,8 @@ import { getArtifactData } from "../utils/db.js";
 const canvasRoutes = new Router();
 
 async function render(req, res) {
+  const start = performance.now();
+  const mem = process.memoryUsage();
   const { artifactId, canvasParams = {} } = req.body ?? {};
 
   if (!artifactId) {
@@ -21,6 +23,19 @@ async function render(req, res) {
     res.setHeader("Content-Type", "image/png");
     const stream = canvas.createPNGStream();
     stream.pipe(res);
+    stream.on("end", () => {
+      const duration = performance.now() - start;
+      
+      console.log(
+        JSON.stringify({
+          service: "render",
+          durationMs: duration,
+          depth: geometry.meta.options.patterns[0].params.depth ?? null,
+          heapUsedMb: mem.heapUsed / 1024 / 1024,
+          rssMb: mem.rss / 1024 / 1024,
+        }),
+      );
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

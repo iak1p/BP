@@ -9,7 +9,6 @@ LineWidthUseCase.prototype.constructor = LineWidthUseCase;
 
 LineWidthUseCase.prototype.apply = function (geometry) {
   const totalObjects = geometry.objects.length;
-  console.log(geometry.objects);
 
   for (let i = 0; i < totalObjects; i++) {
     geometry.objects[i].style.width = this.width;

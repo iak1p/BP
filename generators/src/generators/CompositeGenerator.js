@@ -115,7 +115,7 @@ CompositeGenerator.prototype.generate = async function (patternDTO) {
 
     this.g.meta.type = "composite";
     // this.g.meta.depth = patternDTO.depth;
-    this.g.meta.options = patternDTO.options || {};
+    this.g.meta.options = patternDTO.params || {};
 
     return this.g;
   } catch (err) {

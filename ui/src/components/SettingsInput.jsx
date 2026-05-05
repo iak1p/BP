@@ -5,6 +5,8 @@ export default function SettingsInput({
   defaultValue,
   onChange,
   step = 1,
+  minValue = null,
+  maxValue = null,
 }) {
   return (
     <div>
@@ -15,6 +17,8 @@ export default function SettingsInput({
         step={step}
         defaultValue={defaultValue}
         onChange={onChange}
+        min={minValue}
+        max={maxValue}
       />
     </div>
   );

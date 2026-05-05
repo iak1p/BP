@@ -1,9 +1,9 @@
 import { sseSend } from "../utils/sse.js";
 
 const SERVICES = {
-  generator: process.env.GENERATOR_URL || "http://localhost:4002",
-  usecases: process.env.USECASE_URL || "http://localhost:4003",
-  render: process.env.RENDER_URL || "http://localhost:4004",
+  generator: "http://generators:4002",
+  usecases: "http://usecases:4003",
+  render: "http://render:4004",
 };
 
 export async function runGenerateStep(context) {

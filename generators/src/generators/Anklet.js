@@ -15,7 +15,7 @@ function Anklet(opts) {
   this.moveToBase = this.lineLength + this.hypotenuseSquare;
 }
 
-Anklet.prototype._addRotatedSquare = function (cx, cy) {
+Anklet.prototype._addRotatedSquare = function (cx, cy, depth) {
   const h = this.halfHyp;
 
   const top = { x: cx, y: cy - h };
@@ -23,13 +23,7 @@ Anklet.prototype._addRotatedSquare = function (cx, cy) {
   const bottom = { x: cx, y: cy + h };
   const left = { x: cx - h, y: cy };
 
-  // Квадраты
-  // this.g.addLine({ a: top, b: right });
-  // this.g.addLine({ a: right, b: bottom });
-  // this.g.addLine({ a: bottom, b: left });
-  // this.g.addLine({ a: left, b: top });
-
-  this.g.addPolygon([top, right, bottom, left]);
+  this.g.addPolygon([top, right, bottom, left], depth);
 
   return { top, right, bottom, left };
 };
@@ -57,23 +51,28 @@ Anklet.prototype.polygonToEdges = function (geometry) {
 Anklet.prototype.subdivide = function (cx, cy, depth) {
   if (depth <= 0) return;
 
-  const mid = this._addRotatedSquare(cx, cy);
+  const mid = this._addRotatedSquare(cx, cy, depth);
 
   this.g.addLine({
     a: { x: mid.top.x, y: mid.top.y },
     b: { x: mid.top.x, y: mid.top.y - this.lineLength },
+    depth
   });
+  
   this.g.addLine({
     a: { x: mid.bottom.x, y: mid.bottom.y },
     b: { x: mid.bottom.x, y: mid.bottom.y + this.lineLength },
+    depth
   });
   this.g.addLine({
     a: { x: mid.left.x, y: mid.left.y },
     b: { x: mid.left.x - this.lineLength, y: mid.left.y },
+    depth
   });
   this.g.addLine({
     a: { x: mid.right.x, y: mid.right.y },
     b: { x: mid.right.x + this.lineLength, y: mid.right.y },
+    depth
   });
 
   const topCY = cy - this.lineLength - this.hypotenuseSquare;
@@ -81,10 +80,10 @@ Anklet.prototype.subdivide = function (cx, cy, depth) {
   const leftCX = cx - this.lineLength - this.hypotenuseSquare;
   const rightCX = cx + this.lineLength + this.hypotenuseSquare;
 
-  this._addRotatedSquare(cx, topCY);
-  this._addRotatedSquare(cx, bottomCY);
-  this._addRotatedSquare(leftCX, cy);
-  this._addRotatedSquare(rightCX, cy);
+  this._addRotatedSquare(cx, topCY, depth);
+  this._addRotatedSquare(cx, bottomCY, depth);
+  this._addRotatedSquare(leftCX, cy, depth);
+  this._addRotatedSquare(rightCX, cy, depth);
 
   this.subdivide(cx, topCY - this.moveToBase, depth - 1);
   this.subdivide(cx, bottomCY + this.moveToBase, depth - 1);
@@ -93,9 +92,6 @@ Anklet.prototype.subdivide = function (cx, cy, depth) {
 };
 
 Anklet.prototype.generate = function (patternDTO) {
-  // const depth =
-  //   patternDTO && Number.isFinite(patternDTO.depth) ? patternDTO.depth : 1;
-
   this.subdivide(this.center.x, this.center.y, this.depth);
 
   this.g.meta.type = "anklet";

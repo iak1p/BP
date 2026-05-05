@@ -10,9 +10,9 @@ const generatorRoutes = new Router();
 
 const generate = async (req, res) => {
   const start = performance.now();
+  const mem = process.memoryUsage();
   const { type = null, params = {} } = req.body ?? {};
   const { depth = null, ...otherParams } = params;
-  console.log(params);
 
   if (!type) {
     return res.status(400).json({
@@ -23,7 +23,7 @@ const generate = async (req, res) => {
   try {
     const availableGenerators = await getAvailableGenerators();
     const allowedTypes = availableGenerators.map((g) => g.id);
-
+    
     if (!allowedTypes.includes(type)) {
       return res.status(400).json({
         error: `Invalid type. Allowed values are: ${allowedTypes.join(", ")}`,
@@ -42,6 +42,8 @@ const generate = async (req, res) => {
         service: "generate",
         durationMs: duration,
         depth: req.body?.params.patterns[0]?.params?.depth ?? null,
+        heapUsedMb: mem.heapUsed / 1024 / 1024,
+        rssMb: mem.rss / 1024 / 1024,
       }),
     );
 

@@ -40,8 +40,6 @@ Sierpinsky.prototype.polygonVertices = function (cx, cy, n, sideLen) {
 };
 
 Sierpinsky.prototype.generate = function (patternDTO) {
-  // const depth = patternDTO.depth | 0;
-
   const [a, b, c] = this.polygonVertices(
     this.center.x,
     this.center.y,

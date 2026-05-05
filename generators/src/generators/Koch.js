@@ -65,8 +65,6 @@ Koch.prototype.generateFromEdges = function (edges, depth) {
 };
 
 Koch.prototype.generate = function () {
-  // const depth = patternDTO.depth | 0;
-
   const poly = this.polygonVertices(
     this.center.x,
     this.center.y,
@@ -86,18 +84,6 @@ Koch.prototype.generate = function () {
   this.g.meta.sides = this.sides;
   this.g.meta.outward = this.outward;
 
-  // this.g.meta.pattern = {
-  //   type: patternDTO.type,
-  //   depth: patternDTO.depth,
-  //   options: patternDTO.options,
-  // };
-
-  // this.g.meta.generatorConfig = {
-  //   center: this.center,
-  //   size: this.size,
-  //   sides: this.sides,
-  //   outward: this.outward,
-  // };
   return this.g;
 };
 
